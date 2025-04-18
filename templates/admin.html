@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>管理者ページ</title>
+</head>
+<body>
+    <h1>🛠 管理者ページ</h1>
+
+    <p><a href="/">トップページに戻る</a></p>
+
+    <h2>📋 全予約一覧（承認・拒否状況つき）</h2>
+    <form action="/reject" method="POST">
+        <table border="1">
+            <tr>
+                <th>番号</th>
+                <th>役職</th>
+                <th>氏名</th>
+                <th>団体名</th>
+                <th>日付</th>
+                <th>開始時間</th>
+                <th>終了時間</th>
+                <th>状態</th>
+                <th>操作</th>
+            </tr>
+            {% for r in reservations %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ r[0] }}</td>
+                <td>{{ r[1] }}</td>
+                <td>{{ r[2] }}</td>
+                <td>{{ r[3] }}</td>
+                <td>{{ r[4] }}</td>
+                <td>{{ r[5] }}</td>
+                <td>{{ r[6] }}</td>
+                <td>
+                    {% if r[6] != '拒否' %}
+                    <button type="submit" name="index" value="{{ loop.index0 }}">拒否</button>
+                    {% else %}
+                    拒否済
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </form>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>予約一覧</title>
+</head>
+<body>
+    <h1>予約一覧</h1>
+    <table border="1">
+        <tr>
+            <th>団体名</th>
+            <th>日付</th>
+            <th>時間</th>
+        </tr>
+        {% for r in reservations %}
+        <tr>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[1] }}</td>
+            <td>{{ r[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p><a href="/">トップページへ戻る</a></p>
+</body>
+</html>
