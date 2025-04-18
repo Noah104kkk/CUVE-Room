@@ -112,9 +112,7 @@ def reject():
     with open(filename, 'r', encoding='utf-8') as infile, open(temp_filename, 'w', newline='', encoding='utf-8') as outfile:
         reader = list(csv.reader(infile))
         writer = csv.writer(outfile)
-
-        writer.writerow(reader[0])
-
+        writer.writerow(reader[0])  # ヘッダー書き出し
         for i, row in enumerate(reader[1:]):
             if i == target_index:
                 row[6] = '拒否'
@@ -123,5 +121,7 @@ def reject():
     os.replace(temp_filename, filename)
     return redirect(url_for('admin'))
 
+# ✅ Render用：PORT環境変数でポート指定
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
