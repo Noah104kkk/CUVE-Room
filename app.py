@@ -107,10 +107,11 @@ def admin():
                     reader = csv.reader(csvfile)
                     next(reader)
                     for row in reader:
-                        reservations.append(row)
+                        if len(row) >= 6:
+                            reservations.append(row)
             return render_template('admin.html', reservations=reservations)
         else:
-            return 'パスワードが違います'
+            return render_template('admin_login.html', error='パスワードが違います')
     return render_template('admin_login.html')
 
 @app.route('/reject', methods=['POST'])
