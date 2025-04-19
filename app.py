@@ -33,10 +33,10 @@ def reserve():
                 reader = csv.reader(csvfile)
                 next(reader)
                 for row in reader:
-                    if row[3] == date and row[4] == start_time:
-                        if row[6] != '拒否':
-                            conflict = True
-                            break
+    if len(row) >= 7 and row[3] == date and row[4] == start_time:
+        if row[6] != '拒否':
+            conflict = True
+            break
 
         if conflict:
             return render_template('confirm.html', position=position, name=name, group_name=group_name,
