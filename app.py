@@ -1,13 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask_session import Session
 import csv
 import os
 import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your-very-secret-key'
-app.config['SESSION_COOKIE_SECURE'] = False
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Flask-Session設定
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_FILE_DIR'] = './.flask_session/'
+app.config['SESSION_PERMANENT'] = False
+Session(app)
 
 @app.route('/')
 def welcome():
