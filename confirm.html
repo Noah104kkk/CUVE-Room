@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>重複確認</title>
+</head>
+<body>
+    <h1>重複予約の確認</h1>
+    <p>以下の内容で予約が重複する可能性があります。本当に予約しますか？</p>
+    <form action="/confirm" method="POST">
+        <input type="hidden" name="position" value="{{ position }}">
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="hidden" name="group_name" value="{{ group_name }}">
+        <input type="hidden" name="date" value="{{ date }}">
+        <input type="hidden" name="start_time" value="{{ start_time }}">
+        <input type="hidden" name="end_time" value="{{ end_time }}">
+        <p>{{ date }} の {{ start_time }} ～ {{ end_time }}<br>
+           団体名：{{ group_name }}<br>
+           予約者：{{ name }}（{{ position }}）</p>
+        <input type="submit" value="このまま予約する">
+    </form>
+    <p><a href="/">トップページへ戻る</a></p>
+</body>
+</html>
