@@ -11,12 +11,10 @@
     <form action="/confirm" method="POST">
         <input type="hidden" name="position" value="{{ position }}">
         <input type="hidden" name="name" value="{{ name }}">
-        <input type="hidden" name="group_name" value="{{ group_name }}">
         <input type="hidden" name="date" value="{{ date }}">
         <input type="hidden" name="start_time" value="{{ start_time }}">
         <input type="hidden" name="end_time" value="{{ end_time }}">
         <p>{{ date }} の {{ start_time }} ～ {{ end_time }}<br>
-           団体名：{{ group_name }}<br>
            予約者：{{ name }}（{{ position }}）</p>
         <input type="submit" value="このまま予約する">
     </form>
