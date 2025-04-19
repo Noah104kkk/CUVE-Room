@@ -67,23 +67,23 @@
             <th>状態</th>
             <th>操作</th>
         </tr>
-        {% for i, r in enumerate(reservations) %}
-            <tr {% if r[5] == '拒否' %}class="rejected"{% endif %}>
-                <td>{{ r[0] }}</td>
-                <td>{{ r[1] }}</td>
-                <td>{{ r[2] }}</td>
-                <td>{{ r[3] }}</td>
-                <td>{{ r[4] }}</td>
-                <td>{{ r[5] }}</td>
-                <td>
-                    {% if r[5] != '拒否' %}
-                        <form action="/reject" method="POST" class="reject-form">
-                            <input type="hidden" name="index" value="{{ i }}">
-                            <input type="submit" value="拒否">
-                        </form>
-                    {% endif %}
-                </td>
-            </tr>
+        {% for r in reservations %}
+        <tr {% if r[5] == '拒否' %}class="rejected"{% endif %}>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[1] }}</td>
+            <td>{{ r[2] }}</td>
+            <td>{{ r[3] }}</td>
+            <td>{{ r[4] }}</td>
+            <td>{{ r[5] }}</td>
+            <td>
+                {% if r[5] != '拒否' %}
+                <form action="/reject" method="POST" class="reject-form">
+                    <input type="hidden" name="index" value="{{ loop.index0 }}">
+                    <input type="submit" value="拒否">
+                </form>
+                {% endif %}
+            </td>
+        </tr>
         {% endfor %}
     </table>
 
