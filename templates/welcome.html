@@ -1,17 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>部室予約システム</title>
+    <meta charset="UTF-8">
+    <title>ホーム画面 - 部室予約システム</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 1em;
+            margin: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+        tr.rejected {
+            background-color: #ffe5e5;
+        }
+        a {
+            display: inline-block;
+            margin: 1em auto;
+            text-align: center;
+            display: block;
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>部室予約システムへようこそ！</h1>
+    <h1>部室予約システム ホーム画面</h1>
 
-    <p><a href="/reserve">▶ 予約フォームへ</a></p>
-    <p><a href="/admin">🔐 管理者ページへ</a></p>
-
-    <h2>📋 予約一覧</h2>
-    <table border="1">
+    <table>
         <tr>
             <th>役職</th>
             <th>氏名</th>
@@ -22,17 +54,30 @@
             <th>状態</th>
         </tr>
         {% for r in reservations %}
-        <tr>
-            <td>{{ r[0] }}</td>
-            <td>{{ r[1] }}</td>
-            <td>{{ r[2] }}</td>
-            <td>{{ r[3] }}</td>
-            <td>{{ r[4] }}</td>
-            <td>{{ r[5] }}</td>
-            <td>{{ r[6] }}</td>
-        </tr>
+            {% if r[6] == '拒否' %}
+                <tr class="rejected">
+                    <td>{{ r[0] }}</td>
+                    <td>{{ r[1] }}</td>
+                    <td>{{ r[2] }}</td>
+                    <td>{{ r[3] }}</td>
+                    <td>{{ r[4] }}</td>
+                    <td>{{ r[5] }}</td>
+                    <td>{{ r[6] }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>{{ r[0] }}</td>
+                    <td>{{ r[1] }}</td>
+                    <td>{{ r[2] }}</td>
+                    <td>{{ r[3] }}</td>
+                    <td>{{ r[4] }}</td>
+                    <td>{{ r[5] }}</td>
+                    <td></td>
+                </tr>
+            {% endif %}
         {% endfor %}
     </table>
+
+    <a href="/reserve">予約フォームへ</a>
 </body>
 </html>
-

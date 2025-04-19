@@ -1,19 +1,24 @@
 from flask import Flask, render_template, request, redirect, url_for
 import csv
 import os
+import datetime
 
 app = Flask(__name__)
 
 @app.route('/')
 def welcome():
     reservations = []
+    today = datetime.date.today()
     filename = 'reservations.csv'
     if os.path.isfile(filename):
         with open(filename, 'r', encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
             next(reader)
             for row in reader:
-                reservations.append(row)
+                if len(row) >= 7:
+                    date_obj = datetime.datetime.strptime(row[3], "%Y-%m-%d").date()
+                    if date_obj >= today:
+                        reservations.append(row)
     return render_template('welcome.html', reservations=reservations)
 
 @app.route('/reserve', methods=['GET', 'POST'])
@@ -33,10 +38,16 @@ def reserve():
                 reader = csv.reader(csvfile)
                 next(reader)
                 for row in reader:
-                    if len(row) >= 7 and row[3] == date and row[4] == start_time:
-                        if row[6] != '拒否':
-                            conflict = True
-                            break
+                    if len(row) >= 7:
+                        if row[3] == date:
+                            existing_start = datetime.datetime.strptime(row[4], "%H:%M")
+                            existing_end = datetime.datetime.strptime(row[5], "%H:%M")
+                            new_start = datetime.datetime.strptime(start_time, "%H:%M")
+                            new_end = datetime.datetime.strptime(end_time, "%H:%M")
+                            overlap = max(existing_start, new_start) < min(existing_end, new_end)
+                            if overlap and row[6] != '拒否':
+                                conflict = True
+                                break
 
         if conflict:
             return render_template('confirm.html', position=position, name=name, group_name=group_name,
@@ -65,7 +76,8 @@ def save_reservation(position, name, group_name, date, start_time, end_time):
         if not file_exists:
             writer.writerow(['役職', '氏名', '団体名', '日付', '開始時間', '終了時間', '状態'])
         writer.writerow([position, name, group_name, date, start_time, end_time, '承認'])
-    return f"{group_name}（{position}：{name}）が{date}の{start_time}〜{end_time}に予約しました！"
+    message = f"{group_name}（{position}：{name}）が{date}の{start_time}〜{end_time}に予約しました！"
+    return render_template('complete.html', message=message)
 
 @app.route('/cancel', methods=['POST'])
 def cancel():
@@ -121,7 +133,6 @@ def reject():
     os.replace(temp_filename, filename)
     return redirect(url_for('admin'))
 
-# ✅ Render用：PORT環境変数でポート指定
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)

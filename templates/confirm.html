@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>重複予約の確認</title>
+    <meta charset="UTF-8">
+    <title>重複確認</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <h1>⚠️ 重複予約の確認</h1>
-
-    <p>{{ date }}の{{ start_time }} にはすでに予約があります。</p>
-    <p>それでも予約を続けますか？</p>
-
+    <h1>重複予約の確認</h1>
+    <p>以下の内容で予約が重複する可能性があります。本当に予約しますか？</p>
     <form action="/confirm" method="POST">
         <input type="hidden" name="position" value="{{ position }}">
         <input type="hidden" name="name" value="{{ name }}">
@@ -17,9 +15,11 @@
         <input type="hidden" name="date" value="{{ date }}">
         <input type="hidden" name="start_time" value="{{ start_time }}">
         <input type="hidden" name="end_time" value="{{ end_time }}">
-        <input type="submit" value="はい、予約します">
+        <p>{{ date }} の {{ start_time }} ～ {{ end_time }}<br>
+           団体名：{{ group_name }}<br>
+           予約者：{{ name }}（{{ position }}）</p>
+        <input type="submit" value="このまま予約する">
     </form>
-
-    <p><a href="/reserve">キャンセルして戻る</a></p>
+    <p><a href="/">ホーム画面に戻る</a></p>
 </body>
 </html>

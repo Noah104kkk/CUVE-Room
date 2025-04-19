@@ -1,20 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>部室予約フォーム</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 1em;
+            margin: 0;
+        }
+        input, select {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 1em;
+            padding: 0.5em;
+            font-size: 1em;
+        }
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
     <h1>部室予約フォーム</h1>
     <form action="/reserve" method="POST">
-        役職: <input type="text" name="position" required><br>
-        氏名: <input type="text" name="name" required><br>
-        団体名: <input type="text" name="group_name" required><br>
-        日付（YYYY-MM-DD）: <input type="date" name="date" required><br>
-        開始時間: <input type="time" name="start_time" required><br>
-        終了時間: <input type="time" name="end_time" required><br>
+        <label>役職: <input type="text" name="position" required></label><br>
+        <label>氏名: <input type="text" name="name" required></label><br>
+        <label>団体名: <input type="text" name="group_name" required></label><br>
+        <label>日付: <input type="date" name="date" required></label><br>
+        <label>開始時間: <input type="time" name="start_time" required></label><br>
+        <label>終了時間: <input type="time" name="end_time" required></label><br>
         <input type="submit" value="予約する">
     </form>
-    <p><a href="/">トップページに戻る</a></p>
+    <p><a href="/">ホーム画面へ戻る</a></p>
 </body>
 </html>
