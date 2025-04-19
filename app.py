@@ -37,16 +37,15 @@ def reserve():
                 reader = csv.reader(csvfile)
                 next(reader)
                 for row in reader:
-                    if len(row) >= 6:
-                        if row[2] == date:
-                            existing_start = datetime.datetime.strptime(row[3], "%H:%M")
-                            existing_end = datetime.datetime.strptime(row[4], "%H:%M")
-                            new_start = datetime.datetime.strptime(start_time, "%H:%M")
-                            new_end = datetime.datetime.strptime(end_time, "%H:%M")
-                            overlap = max(existing_start, new_start) < min(existing_end, new_end)
-                            if overlap and row[5] != '拒否':
-                                conflict = True
-                                break
+                    if len(row) >= 6 and row[2] == date:
+                        existing_start = datetime.datetime.strptime(row[3], "%H:%M")
+                        existing_end = datetime.datetime.strptime(row[4], "%H:%M")
+                        new_start = datetime.datetime.strptime(start_time, "%H:%M")
+                        new_end = datetime.datetime.strptime(end_time, "%H:%M")
+                        overlap = max(existing_start, new_start) < min(existing_end, new_end)
+                        if overlap and row[5] != '拒否':
+                            conflict = True
+                            break
 
         if conflict:
             return render_template('confirm.html', position=position, name=name,
@@ -116,21 +115,29 @@ def admin():
 
 @app.route('/reject', methods=['POST'])
 def reject():
-    target_index = int(request.form['index'])
-    filename = 'reservations.csv'
-    temp_filename = 'temp_reservations.csv'
+    try:
+        target_index = int(request.form['index'])
+        filename = 'reservations.csv'
+        temp_filename = 'temp_reservations.csv'
 
-    with open(filename, 'r', encoding='utf-8') as infile, open(temp_filename, 'w', newline='', encoding='utf-8') as outfile:
-        reader = list(csv.reader(infile))
-        writer = csv.writer(outfile)
-        writer.writerow(reader[0])
-        for i, row in enumerate(reader[1:]):
-            if i == target_index:
-                row[5] = '拒否'
-            writer.writerow(row)
+        with open(filename, 'r', encoding='utf-8') as infile, open(temp_filename, 'w', newline='', encoding='utf-8') as outfile:
+            reader = list(csv.reader(infile))
+            writer = csv.writer(outfile)
 
-    os.replace(temp_filename, filename)
-    return redirect(url_for('admin'))
+            writer.writerow(reader[0])  # ヘッダー書き込み
+
+            for i, row in enumerate(reader[1:]):
+                if len(row) >= 6:
+                    if i == target_index:
+                        row[5] = '拒否'
+                writer.writerow(row)
+
+        os.replace(temp_filename, filename)
+        return redirect(url_for('admin'))
+
+    except Exception as e:
+        print(f"拒否処理中のエラー: {e}")
+        return "拒否処理中にエラーが発生しました", 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
