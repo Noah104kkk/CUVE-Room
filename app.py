@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import csv
 import os
 import datetime
 
 app = Flask(__name__)
+app.secret_key = 'your-very-secret-key'  # セッション管理用の秘密鍵
 
 @app.route('/')
 def welcome():
@@ -99,6 +100,7 @@ def admin():
     if request.method == 'POST':
         password = request.form['password']
         if password == 'adminpass':
+            session['admin'] = True  # ログイン状態を記録
             reservations = []
             filename = 'reservations.csv'
             if os.path.isfile(filename):
@@ -115,6 +117,9 @@ def admin():
 
 @app.route('/reject', methods=['POST'])
 def reject():
+    if not session.get('admin'):
+        return redirect(url_for('admin'))
+
     try:
         target_index = int(request.form['index'])
         filename = 'reservations.csv'
@@ -138,6 +143,11 @@ def reject():
     except Exception as e:
         print(f"拒否処理中のエラー: {e}")
         return "拒否処理中にエラーが発生しました", 500
+
+@app.route('/logout')
+def logout():
+    session.pop('admin', None)
+    return redirect(url_for('admin'))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
