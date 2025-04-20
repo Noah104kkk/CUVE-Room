@@ -1,17 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from flask_session import Session
 import csv
 import os
 import datetime
 
 app = Flask(__name__)
-app.secret_key = 'your-very-secret-key'
 
-# Flask-Session設定
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_FILE_DIR'] = './.flask_session/'
-app.config['SESSION_PERMANENT'] = False
-Session(app)
+# Flask-Session を使用する場合、Flask 2.x 系でも `app.session_cookie_name` は非推奨または削除されているため、Flask-Session の使用を避けるか、セッション管理を別の方法に変更することを検討してください。
+app.secret_key = 'your-very-secret-key'
 
 @app.route('/')
 def welcome():
@@ -124,7 +119,6 @@ def admin():
 
 @app.route('/reject', methods=['POST'])
 def reject():
-    print('セッションadmin状態:', session.get('admin'))
     if not session.get('admin'):
         return redirect(url_for('admin'))
 
