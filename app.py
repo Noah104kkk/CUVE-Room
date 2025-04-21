@@ -1,27 +1,32 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-import csv
+import sqlite3
 import os
 import datetime
 
 app = Flask(__name__)
-
-# Flask-Session を使用する場合、Flask 2.x 系でも `app.session_cookie_name` は非推奨または削除されているため、Flask-Session の使用を避けるか、セッション管理を別の方法に変更することを検討してください。
 app.secret_key = 'your-very-secret-key'
+
+# セッション設定（Render対応）
+app.config['SESSION_COOKIE_SECURE'] = False
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+DB_NAME = 'reservations.db'
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 @app.route('/')
 def welcome():
-    reservations = []
+    conn = get_db_connection()
     today = datetime.date.today()
-    filename = 'reservations.csv'
-    if os.path.isfile(filename):
-        with open(filename, 'r', encoding='utf-8') as csvfile:
-            reader = csv.reader(csvfile)
-            next(reader)
-            for row in reader:
-                if len(row) >= 6:
-                    date_obj = datetime.datetime.strptime(row[2], "%Y-%m-%d").date()
-                    if date_obj >= today:
-                        reservations.append(row)
+    reservations = conn.execute(
+        "SELECT * FROM reservations WHERE date >= ?",
+        (today.strftime('%Y-%m-%d'),)
+    ).fetchall()
+    conn.close()
     return render_template('welcome.html', reservations=reservations)
 
 @app.route('/reserve', methods=['GET', 'POST'])
@@ -33,22 +38,24 @@ def reserve():
         start_time = request.form['start_time']
         end_time = request.form['end_time']
 
-        filename = 'reservations.csv'
+        conn = get_db_connection()
+        existing = conn.execute(
+            "SELECT * FROM reservations WHERE date = ? AND status != '拒否'",
+            (date,)
+        ).fetchall()
+
+        new_start = datetime.datetime.strptime(start_time, "%H:%M")
+        new_end = datetime.datetime.strptime(end_time, "%H:%M")
         conflict = False
-        if os.path.isfile(filename):
-            with open(filename, 'r', encoding='utf-8') as csvfile:
-                reader = csv.reader(csvfile)
-                next(reader)
-                for row in reader:
-                    if len(row) >= 6 and row[2] == date:
-                        existing_start = datetime.datetime.strptime(row[3], "%H:%M")
-                        existing_end = datetime.datetime.strptime(row[4], "%H:%M")
-                        new_start = datetime.datetime.strptime(start_time, "%H:%M")
-                        new_end = datetime.datetime.strptime(end_time, "%H:%M")
-                        overlap = max(existing_start, new_start) < min(existing_end, new_end)
-                        if overlap and row[5] != '拒否':
-                            conflict = True
-                            break
+
+        for row in existing:
+            existing_start = datetime.datetime.strptime(row['start_time'], "%H:%M")
+            existing_end = datetime.datetime.strptime(row['end_time'], "%H:%M")
+            if max(existing_start, new_start) < min(existing_end, new_end):
+                conflict = True
+                break
+
+        conn.close()
 
         if conflict:
             return render_template('confirm.html', position=position, name=name,
@@ -65,17 +72,16 @@ def confirm():
     date = request.form['date']
     start_time = request.form['start_time']
     end_time = request.form['end_time']
-
     return save_reservation(position, name, date, start_time, end_time)
 
 def save_reservation(position, name, date, start_time, end_time):
-    filename = 'reservations.csv'
-    file_exists = os.path.isfile(filename)
-    with open(filename, 'a', newline='', encoding='utf-8') as csvfile:
-        writer = csv.writer(csvfile)
-        if not file_exists:
-            writer.writerow(['役職', '氏名', '日付', '開始時間', '終了時間', '状態'])
-        writer.writerow([position, name, date, start_time, end_time, '承認'])
+    conn = get_db_connection()
+    conn.execute(
+        "INSERT INTO reservations (position, name, date, start_time, end_time, status) VALUES (?, ?, ?, ?, ?, '承認')",
+        (position, name, date, start_time, end_time)
+    )
+    conn.commit()
+    conn.close()
     message = f"{position}：{name} が {date} の {start_time}〜{end_time} に予約しました！"
     return render_template('complete.html', message=message)
 
@@ -85,16 +91,13 @@ def cancel():
     date = request.form['date']
     start_time = request.form['start_time']
 
-    filename = 'reservations.csv'
-    temp_filename = 'temp_reservations.csv'
-    with open(filename, 'r', encoding='utf-8') as infile, open(temp_filename, 'w', newline='', encoding='utf-8') as outfile:
-        reader = csv.reader(infile)
-        writer = csv.writer(outfile)
-        for row in reader:
-            if row[1] == name and row[2] == date and row[3] == start_time:
-                continue
-            writer.writerow(row)
-    os.replace(temp_filename, filename)
+    conn = get_db_connection()
+    conn.execute(
+        "DELETE FROM reservations WHERE name = ? AND date = ? AND start_time = ?",
+        (name, date, start_time)
+    )
+    conn.commit()
+    conn.close()
     return redirect(url_for('welcome'))
 
 @app.route('/admin', methods=['GET', 'POST'])
@@ -103,15 +106,9 @@ def admin():
         password = request.form['password']
         if password == 'adminpass':
             session['admin'] = True
-            reservations = []
-            filename = 'reservations.csv'
-            if os.path.isfile(filename):
-                with open(filename, 'r', encoding='utf-8') as csvfile:
-                    reader = csv.reader(csvfile)
-                    next(reader)
-                    for row in reader:
-                        if len(row) >= 6:
-                            reservations.append(row)
+            conn = get_db_connection()
+            reservations = conn.execute("SELECT * FROM reservations").fetchall()
+            conn.close()
             return render_template('admin.html', reservations=reservations)
         else:
             return render_template('admin_login.html', error='パスワードが違います')
@@ -124,22 +121,13 @@ def reject():
 
     try:
         target_index = int(request.form['index'])
-        filename = 'reservations.csv'
-        temp_filename = 'temp_reservations.csv'
-
-        with open(filename, 'r', encoding='utf-8') as infile, open(temp_filename, 'w', newline='', encoding='utf-8') as outfile:
-            reader = list(csv.reader(infile))
-            writer = csv.writer(outfile)
-
-            writer.writerow(reader[0])
-
-            for i, row in enumerate(reader[1:]):
-                if len(row) >= 6:
-                    if i == target_index:
-                        row[5] = '拒否'
-                writer.writerow(row)
-
-        os.replace(temp_filename, filename)
+        conn = get_db_connection()
+        reservations = conn.execute("SELECT rowid, * FROM reservations").fetchall()
+        if 0 <= target_index < len(reservations):
+            rowid = reservations[target_index]['rowid']
+            conn.execute("UPDATE reservations SET status = '拒否' WHERE rowid = ?", (rowid,))
+            conn.commit()
+        conn.close()
         return redirect(url_for('admin'))
 
     except Exception as e:
