@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 import os
 import datetime
+import traceback
 
 app = Flask(__name__)
 app.secret_key = 'your-very-secret-key'
@@ -131,7 +132,8 @@ def reject():
         return redirect(url_for('admin'))
 
     except Exception as e:
-        print(f"拒否処理中のエラー: {e}")
+        print(f"拒否処理中のエラー: ")
+	traceback.print_exc()
         return "拒否処理中にエラーが発生しました", 500
 
 @app.route('/logout')
