@@ -130,4 +130,26 @@ def reject():
 
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
+        cursor.execute("SELECT id FROM reservations ORDER BY id")
+        all_ids = cursor.fetchall()
 
+        if target_index < len(all_ids):
+            target_id = all_ids[target_index][0]
+            cursor.execute("UPDATE reservations SET status = '拒否' WHERE id = ?", (target_id,))
+            conn.commit()
+        conn.close()
+        return redirect(url_for('admin'))
+
+    except Exception as e:
+        print("拒否処理中のエラー:")
+        traceback.print_exc()
+        return "拒否処理中にエラーが発生しました", 500
+
+@app.route('/logout')
+def logout():
+    session.pop('admin', None)
+    return redirect(url_for('admin'))
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
