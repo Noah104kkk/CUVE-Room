@@ -114,6 +114,7 @@ def admin():
     if request.method == 'POST':
         password = request.form['password']
         if password == 'adminpass':
+            session.permanent = True  # ← セッション維持！
             session['admin'] = True
             reservations = get_reservations(include_past=True)
             return render_template('admin.html', reservations=reservations)

@@ -1,62 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>ホーム画面 - 部室予約システム</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { font-family: sans-serif; padding: 1em; margin: 0; }
-        h1 { text-align: center; }
-        table {
-            width: 100%; max-width: 800px;
-            margin: 0 auto; border-collapse: collapse;
-        }
-        th, td {
-            padding: 8px; text-align: center;
-            border: 1px solid #ccc;
-        }
-        tr.rejected { background-color: #ffe5e5; }
-        a {
-            display: block; margin: 1em auto;
-            text-align: center; color: #0066cc;
-            text-decoration: none;
-        }
-        a:hover { text-decoration: underline; }
-    </style>
+    <title>部室予約システム ホーム</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>部室予約システム ホーム画面</h1>
-    <table>
-        <tr>
-            <th>役職</th>
-            <th>氏名</th>
-            <th>日付</th>
-            <th>開始時間</th>
-            <th>終了時間</th>
-            <th>状態</th>
-        </tr>
-        {% for r in reservations %}
-            {% if r[5] == '拒否' %}
-                <tr class="rejected">
-                    <td>{{ r[0] }}</td>
-                    <td>{{ r[1] }}</td>
-                    <td>{{ r[2] }}</td>
-                    <td>{{ r[3] }}</td>
-                    <td>{{ r[4] }}</td>
-                    <td>{{ r[5] }}</td>
-                </tr>
-            {% else %}
+    <h1>部室予約システムへようこそ！</h1>
+
+    <p><a href="{{ url_for('reserve') }}">予約フォームへ</a></p>
+
+    <h2>予約一覧</h2>
+    <div class="table-container">
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ r[0] }}</td>
-                    <td>{{ r[1] }}</td>
-                    <td>{{ r[2] }}</td>
-                    <td>{{ r[3] }}</td>
-                    <td>{{ r[4] }}</td>
-                    <td></td>
+                    <th>役職</th>
+                    <th>氏名</th>
+                    <th>日付</th>
+                    <th>開始時間</th>
+                    <th>終了時間</th>
+                    <th>状態</th>
                 </tr>
-            {% endif %}
-        {% endfor %}
-    </table>
-    <a href="/reserve">予約フォームへ</a>
+            </thead>
+            <tbody>
+                {% for r in reservations %}
+                    <tr class="{% if r[5] == '拒否' %}rejected{% endif %}">
+                        <td>{{ r[0] }}</td>
+                        <td>{{ r[1] }}</td>
+                        <td>{{ r[2] }}</td>
+                        <td>{{ r[3] }}</td>
+                        <td>{{ r[4] }}</td>
+                        <td>{{ r[5] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

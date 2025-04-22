@@ -1,92 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>管理者ページ - 予約一覧</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 1em;
-            margin: 0;
-        }
-        h1 {
-            text-align: center;
-        }
-        table {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 8px;
-            text-align: center;
-            border: 1px solid #ccc;
-        }
-        tr.rejected {
-            background-color: #ffe5e5;
-        }
-        form.reject-form {
-            display: inline;
-        }
-        input[type="submit"] {
-            padding: 4px 10px;
-            font-size: 0.9em;
-            background-color: #ff6666;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #cc0000;
-        }
-        a {
-            display: block;
-            margin: 1em auto;
-            text-align: center;
-            color: #0066cc;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <title>管理者ページ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>管理者ページ - 予約一覧</h1>
+    <form action="{{ url_for('logout') }}" method="get">
+        <button type="submit">ログアウト</button>
+    </form>
 
-    <table>
-        <tr>
-            <th>役職</th>
-            <th>氏名</th>
-            <th>日付</th>
-            <th>開始時間</th>
-            <th>終了時間</th>
-            <th>状態</th>
-            <th>操作</th>
-        </tr>
-        {% for r in reservations %}
-        <tr {% if r[5] == '拒否' %}class="rejected"{% endif %}>
-            <td>{{ r[0] }}</td>
-            <td>{{ r[1] }}</td>
-            <td>{{ r[2] }}</td>
-            <td>{{ r[3] }}</td>
-            <td>{{ r[4] }}</td>
-            <td>{{ r[5] }}</td>
-            <td>
-                {% if r[5] != '拒否' %}
-                <form action="/reject" method="POST" class="reject-form">
-                    <input type="hidden" name="index" value="{{ loop.index0 }}">
-                    <input type="submit" value="拒否">
-                </form>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <a href="/">ホーム画面へ戻る</a>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>役職</th>
+                    <th>氏名</th>
+                    <th>日付</th>
+                    <th>開始時間</th>
+                    <th>終了時間</th>
+                    <th>状態</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i, r in enumerate(reservations) %}
+                <tr class="{% if r[5] == '拒否' %}rejected{% endif %}">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ r[0] }}</td>
+                    <td>{{ r[1] }}</td>
+                    <td>{{ r[2] }}</td>
+                    <td>{{ r[3] }}</td>
+                    <td>{{ r[4] }}</td>
+                    <td>{{ r[5] }}</td>
+                    <td>
+                        {% if r[5] != '拒否' %}
+                        <form action="{{ url_for('reject') }}" method="post" style="display:inline;">
+                            <input type="hidden" name="index" value="{{ i }}">
+                            <button type="submit">拒否</button>
+                        </form>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

@@ -1,0 +1,102 @@
+body {
+    font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    margin: 20px;
+    padding: 0;
+    background-color: #f8f8f8;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+a, button {
+    font-size: 1rem;
+    padding: 8px 16px;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+a:hover, button:hover {
+    background-color: #1565c0;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 600px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #eeeeee;
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+.rejected {
+    background-color: #ffe5e5;
+    color: #a33;
+}
+
+/* スマホ対応 */
+@media screen and (max-width: 600px) {
+    body {
+        margin: 10px;
+    }
+
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        border-bottom: 2px solid #ccc;
+    }
+
+    td {
+        text-align: left;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    td::before {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        width: 45%;
+        white-space: nowrap;
+        font-weight: bold;
+    }
+
+    /* 項目名 */
+    td:nth-of-type(1)::before { content: "役職"; }
+    td:nth-of-type(2)::before { content: "氏名"; }
+    td:nth-of-type(3)::before { content: "日付"; }
+    td:nth-of-type(4)::before { content: "開始時間"; }
+    td:nth-of-type(5)::before { content: "終了時間"; }
+    td:nth-of-type(6)::before { content: "状態"; }
+    td:nth-of-type(7)::before { content: "操作"; }
+}
