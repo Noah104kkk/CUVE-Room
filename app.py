@@ -133,7 +133,7 @@ def reject():
 
     except Exception as e:
         print(f"拒否処理中のエラー: ")
-	traceback.print_exc()
+        traceback.print_exc()
         return "拒否処理中にエラーが発生しました", 500
 
 @app.route('/logout')
