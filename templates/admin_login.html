@@ -3,17 +3,15 @@
 <head>
     <meta charset="utf-8">
     <title>管理者ログイン</title>
-    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <h1>管理者ログイン</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
     <form method="POST">
-        {% if error %}
-            <p style="color: red;">{{ error }}</p>
-        {% endif %}
-        <label for="password">パスワード：</label>
-        <input type="password" name="password" id="password" required>
-        <br><br>
+        <label>パスワード：</label>
+        <input type="password" name="password" required>
         <button type="submit">ログイン</button>
     </form>
 </body>
