@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>管理者ページ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>管理者ページ - 予約一覧</h1>
+    <form action="{{ url_for('logout') }}" method="get">
+        <button type="submit">ログアウト</button>
+    </form>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>役職</th>
+                    <th>氏名</th>
+                    <th>日付</th>
+                    <th>開始時間</th>
+                    <th>終了時間</th>
+                    <th>状態</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i, r in enumerate(reservations) %}
+                <tr class="{% if r[5] == '拒否' %}rejected{% endif %}">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ r[0] }}</td>
+                    <td>{{ r[1] }}</td>
+                    <td>{{ r[2] }}</td>
+                    <td>{{ r[3] }}</td>
+                    <td>{{ r[4] }}</td>
+                    <td>{{ r[5] }}</td>
+                    <td>
+                        {% if r[5] != '拒否' %}
+                        <form action="{{ url_for('reject') }}" method="post" style="display:inline;">
+                            <input type="hidden" name="index" value="{{ i }}">
+                            <button type="submit">拒否</button>
+                        </form>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
