@@ -1,41 +1,54 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>部室予約システム ホーム</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="utf-8">
+    <title>部室予約システム</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #888;
+            padding: 8px;
+            text-align: center;
+        }
+        .rejected {
+            background-color: #f8d7da; /* 拒否された予約を薄い赤色で表示 */
+        }
+    </style>
 </head>
 <body>
     <h1>部室予約システムへようこそ！</h1>
-
     <p><a href="{{ url_for('reserve') }}">予約フォームへ</a></p>
 
-    <h2>予約一覧</h2>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>役職</th>
-                    <th>氏名</th>
-                    <th>日付</th>
-                    <th>開始時間</th>
-                    <th>終了時間</th>
-                    <th>状態</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for r in reservations %}
-                    <tr class="{% if r[5] == '拒否' %}rejected{% endif %}">
-                        <td>{{ r[0] }}</td>
-                        <td>{{ r[1] }}</td>
-                        <td>{{ r[2] }}</td>
-                        <td>{{ r[3] }}</td>
-                        <td>{{ r[4] }}</td>
-                        <td>{{ r[5] }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>番号</th>
+                <th>役職</th>
+                <th>氏名</th>
+                <th>日付</th>
+                <th>開始時間</th>
+                <th>終了時間</th>
+                <th>状態</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reservations %}
+            <tr class="{{ 'rejected' if r[6] == '拒否' else '' }}">
+                <td>{{ loop.index }}</td>
+                <td>{{ r[1] }}</td>
+                <td>{{ r[2] }}</td>
+                <td>{{ r[3] }}</td>
+                <td>{{ r[4] }}</td>
+                <td>{{ r[5] }}</td>
+                <td>{{ r[6] or '' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
