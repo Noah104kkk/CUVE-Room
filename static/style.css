@@ -52,9 +52,22 @@ tr:hover {
     background-color: #f1f1f1;
 }
 
+/* 拒否された予約の行 */
 .rejected {
-    background-color: #ffe5e5 !important;
+    background-color: #ffe5e5;
     color: #a33;
+}
+
+/* 専属予約の行 */
+.exclusive {
+    background-color: #e0f0ff;
+    color: #003366;
+}
+
+/* ボタンの下に間隔 */
+.back-link {
+    margin-top: 10px;
+    text-align: center;
 }
 
 /* スマホ対応 */
@@ -98,4 +111,5 @@ tr:hover {
     td:nth-of-type(5)::before { content: "開始時間"; }
     td:nth-of-type(6)::before { content: "終了時間"; }
     td:nth-of-type(7)::before { content: "状態"; }
+    td:nth-of-type(8)::before { content: "操作"; }
 }

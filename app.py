@@ -9,7 +9,7 @@ app.secret_key = 'your-very-secret-key'
 def welcome():
     conn = sqlite3.connect('reservations.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM reservations WHERE date >= date('now')")
+    c.execute("SELECT * FROM reservations WHERE date >= date('now') ORDER BY date ASC, start_time ASC")
     reservations = c.fetchall()
     conn.close()
     return render_template('welcome.html', reservations=reservations)
@@ -22,28 +22,24 @@ def reserve():
         date = request.form['date']
         start_time = request.form['start_time']
         end_time = request.form['end_time']
-        mode = request.form['mode']  # 専属 or 共有
+        mode = request.form['mode']  # 専属 or 開放
 
         conn = sqlite3.connect('reservations.db')
         c = conn.cursor()
 
-        # 専属の場合のみ重複チェック
         if mode == '専属':
             c.execute("""
                 SELECT * FROM reservations
                 WHERE date = ? AND (
-                    (start_time < ? AND end_time > ?) OR
-                    (start_time < ? AND end_time > ?) OR
-                    (start_time >= ? AND end_time <= ?)
+                    (? < end_time AND ? > start_time)
                 ) AND (status IS NULL OR status != '拒否')
-            """, (date, end_time, end_time, start_time, start_time, start_time, end_time))
+            """, (date, start_time, end_time))
             conflict = c.fetchone()
             conn.close()
 
             if conflict:
                 return render_template('confirm.html', position=position, name=name,
                                        date=date, start_time=start_time, end_time=end_time, mode=mode)
-
         else:
             conn.close()
 
@@ -103,7 +99,7 @@ def admin():
 
     conn = sqlite3.connect('reservations.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM reservations")
+    c.execute("SELECT * FROM reservations ORDER BY date ASC, start_time ASC")
     reservations = c.fetchall()
     conn.close()
     return render_template('admin.html', reservations=reservations)
@@ -125,6 +121,23 @@ def reject():
         print("拒否処理エラー:", e)
         return "拒否処理中にエラーが発生しました", 500
 
+@app.route('/undo_reject', methods=['POST'])
+def undo_reject():
+    if not session.get('admin'):
+        return redirect(url_for('admin'))
+
+    try:
+        target_id = request.form['id']
+        conn = sqlite3.connect('reservations.db')
+        c = conn.cursor()
+        c.execute("UPDATE reservations SET status = '' WHERE id = ?", (target_id,))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('admin'))
+    except Exception as e:
+        print("拒否取消エラー:", e)
+        return "拒否取消中にエラーが発生しました", 500
+
 @app.route('/logout')
 def logout():
     session.pop('admin', None)
@@ -133,4 +146,3 @@ def logout():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-

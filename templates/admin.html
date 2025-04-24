@@ -9,43 +9,47 @@
     <h1>管理者ページ</h1>
     <p><a href="{{ url_for('logout') }}">ログアウト</a></p>
 
-    <table>
-        <thead>
-            <tr>
-                <th>番号</th>
-                <th>利用種別</th>
-                <th>氏名</th>
-                <th>日付</th>
-                <th>開始時間</th>
-                <th>終了時間</th>
-                <th>状態</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for r in reservations %}
-            <tr class="
-                {% if r[7] == '専属' %}exclusive{% endif %}
-                {% if r[6] == '拒否' %}rejected{% endif %}
-            ">
-                <td>{{ loop.index }}</td>
-                <td>{{ r[1] }}</td>
-                <td>{{ r[2] }}</td>
-                <td>{{ r[3] }}</td>
-                <td>{{ r[4] }}</td>
-                <td>{{ r[5] }}</td>
-                <td>{{ r[6] or '' }}</td>
-                <td>
-                    {% if r[6] != '拒否' %}
-                    <form action="{{ url_for('reject') }}" method="POST" style="display:inline;">
-                        <input type="hidden" name="id" value="{{ r[0] }}">
-                        <button type="submit">拒否</button>
-                    </form>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>番号</th>
+                    <th>利用種別</th>
+                    <th>氏名</th>
+                    <th>日付</th>
+                    <th>開始時間</th>
+                    <th>終了時間</th>
+                    <th>状態</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservations %}
+                <tr class="{% if r[6] == '拒否' %}rejected{% elif r[7] == '専属' %}exclusive{% endif %}">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ r[1] }}</td>
+                    <td>{{ r[2] }}</td>
+                    <td>{{ r[3] }}</td>
+                    <td>{{ r[4] }}</td>
+                    <td>{{ r[5] }}</td>
+                    <td>{{ r[6] or '' }}</td>
+                    <td>
+                        {% if r[6] == '拒否' %}
+                        <form action="{{ url_for('undo_reject') }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="id" value="{{ r[0] }}">
+                            <button type="submit">拒否取消</button>
+                        </form>
+                        {% else %}
+                        <form action="{{ url_for('reject') }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="id" value="{{ r[0] }}">
+                            <button type="submit">拒否</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>ホーム画面（予約一覧）</title>
+    <meta charset="UTF-8">
+    <title>ホーム画面</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>部室予約一覧</h1>
+    <h1>予約一覧</h1>
+
+    <div class="back-link">
+        <a href="/reserve">予約フォーム</a>
+    </div>
 
     <div class="table-container">
         <table>
@@ -24,7 +28,10 @@
             </thead>
             <tbody>
                 {% for r in reservations %}
-                <tr class="{{ 'rejected' if r[6] == '拒否' else '' }}">
+                <tr class="
+                    {% if r[7] == '専属' %}exclusive{% endif %}
+                    {% if r[6] == '拒否' %}rejected{% endif %}
+                ">
                     <td>{{ loop.index }}</td>
                     <td>{{ r[7] }}</td>
                     <td>{{ r[2] }}</td>
@@ -36,10 +43,6 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>
-
-    <div class="back-link">
-        <a href="/reserve">予約フォームへ</a>
     </div>
 </body>
 </html>
