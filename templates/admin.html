@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>管理者ページ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -25,7 +26,7 @@
             </thead>
             <tbody>
                 {% for r in reservations %}
-                <tr class="{% if r[6] == '拒否' %}rejected{% elif r[7] == '専属' %}exclusive{% endif %}">
+                <tr class="{% if r[6] == '拒否' %}rejected{% endif %}{% if r[7] == '専属' %} exclusive{% endif %}">
                     <td>{{ loop.index }}</td>
                     <td>{{ r[1] }}</td>
                     <td>{{ r[2] }}</td>
@@ -35,12 +36,12 @@
                     <td>{{ r[6] or '' }}</td>
                     <td>
                         {% if r[6] == '拒否' %}
-                        <form action="{{ url_for('undo_reject') }}" method="POST" style="display:inline;">
+                        <form method="POST" action="{{ url_for('unreject') }}">
                             <input type="hidden" name="id" value="{{ r[0] }}">
                             <button type="submit">拒否取消</button>
                         </form>
                         {% else %}
-                        <form action="{{ url_for('reject') }}" method="POST" style="display:inline;">
+                        <form method="POST" action="{{ url_for('reject') }}">
                             <input type="hidden" name="id" value="{{ r[0] }}">
                             <button type="submit">拒否</button>
                         </form>
