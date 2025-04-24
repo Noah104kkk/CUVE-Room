@@ -2,88 +2,19 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>予約確認</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 1em;
-            text-align: center;
-            background-color: #f4f4f4;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: auto;
-            background: white;
-            padding: 2em;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            color: #333;
-        }
-
-        .buttons {
-            margin-top: 20px;
-        }
-
-        .buttons form,
-        .buttons a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-
-        button, a.button-link {
-            font-size: 1rem;
-            padding: 8px 16px;
-            background-color: #1976d2;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        button:hover, a.button-link:hover {
-            background-color: #135ba1;
-        }
-
-        .info {
-            margin-top: 1em;
-            text-align: left;
-            background-color: #eef;
-            padding: 1em;
-            border-radius: 5px;
-        }
-    </style>
+    <title>重複確認</title>
 </head>
 <body>
-    <div class="container">
-        <h2>すでに他の予約と重複しています。</h2>
-        <p>内容を確認の上、続ける場合は下のボタンを押してください。</p>
-
-        <div class="info">
-            <p><strong>役職：</strong>{{ position }}</p>
-            <p><strong>氏名：</strong>{{ name }}</p>
-            <p><strong>日付：</strong>{{ date }}</p>
-            <p><strong>開始時間：</strong>{{ start_time }}</p>
-            <p><strong>終了時間：</strong>{{ end_time }}</p>
-        </div>
-
-        <div class="buttons">
-            <form method="POST" action="/confirm">
-                <input type="hidden" name="position" value="{{ position }}">
-                <input type="hidden" name="name" value="{{ name }}">
-                <input type="hidden" name="date" value="{{ date }}">
-                <input type="hidden" name="start_time" value="{{ start_time }}">
-                <input type="hidden" name="end_time" value="{{ end_time }}">
-                <button type="submit">予約を続ける</button>
-            </form>
-            <a href="/reserve" class="button-link">戻る</a>
-        </div>
-    </div>
+    <h2>この時間帯は既に予約があります。続けますか？</h2>
+    <form action="/confirm" method="POST">
+        <input type="hidden" name="position" value="{{ position }}">
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="hidden" name="date" value="{{ date }}">
+        <input type="hidden" name="start_time" value="{{ start_time }}">
+        <input type="hidden" name="end_time" value="{{ end_time }}">
+        <input type="hidden" name="mode" value="{{ mode }}">
+        <button type="submit">はい、続けます</button>
+        <a href="/reserve">いいえ、戻ります</a>
+    </form>
 </body>
 </html>

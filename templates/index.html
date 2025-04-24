@@ -43,8 +43,12 @@
 <body>
     <h1>部室予約フォーム</h1>
     <form method="POST">
-        <label for="position">役職:</label>
-        <input type="text" id="position" name="position" required>
+        <label for="mode">利用種別（専属・開放など）:</label>
+        <select id="mode" name="mode" required>
+            <option value="" disabled selected>選択してください</option>
+            <option value="専属">専属（1人利用など）</option>
+            <option value="開放">開放（複数人OK）</option>
+        </select>
 
         <label for="name">氏名:</label>
         <input type="text" id="name" name="name" required>
@@ -57,13 +61,6 @@
 
         <label for="end_time">終了時間:</label>
         <input type="time" id="end_time" name="end_time" required>
-
-        <label for="mode">利用モード:</label>
-        <select name="mode" id="mode" required>
-            <option value="" disabled selected>選択してください</option>
-            <option value="専属">専属（1人利用など）</option>
-            <option value="開放">開放（複数人OK）</option>
-        </select>
 
         <button type="submit">予約する</button>
     </form>
