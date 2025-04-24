@@ -1,42 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>ホーム画面</title>
+    <meta charset="utf-8">
+    <title>ホーム画面（予約一覧）</title>
     <link rel="stylesheet" href="/static/style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <h1>部室予約システム ホーム画面</h1>
+    <h1>予約一覧</h1>
 
-    <p><a href="/reserve">予約フォームへ</a></p>
-    <p><a href="/admin">管理者ログイン</a></p>
+    <table>
+        <thead>
+            <tr>
+                <th>利用種別</th>
+                <th>氏名</th>
+                <th>日付</th>
+                <th>開始時間</th>
+                <th>終了時間</th>
+                <th>状態</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reservations %}
+            <tr class="
+                {% if r[7] == '専属' %}exclusive{% endif %}
+                {% if r[6] == '拒否' %}rejected{% endif %}
+            ">
+                <td>{{ r[1] }}</td>
+                <td>{{ r[2] }}</td>
+                <td>{{ r[3] }}</td>
+                <td>{{ r[4] }}</td>
+                <td>{{ r[5] }}</td>
+                <td>{{ r[6] or '' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>番号</th>
-                    <th>氏名</th>
-                    <th>日付</th>
-                    <th>開始時間</th>
-                    <th>終了時間</th>
-                    <th>状態</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for r in reservations %}
-                <tr class="{{ 'rejected' if r[6] == '拒否' else '' }}">
-                    <td>{{ loop.index }}</td>
-                    <td>{{ r[2] }}</td>
-                    <td>{{ r[3] }}</td>
-                    <td>{{ r[4] }}</td>
-                    <td>{{ r[5] }}</td>
-                    <td>{{ r[6] or '' }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="back-link">
+        <a href="{{ url_for('reserve') }}">予約フォームに戻る</a>
     </div>
 </body>
 </html>

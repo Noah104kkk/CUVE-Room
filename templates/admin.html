@@ -4,21 +4,6 @@
     <meta charset="utf-8">
     <title>管理者ページ</title>
     <link rel="stylesheet" href="/static/style.css">
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #888;
-            padding: 8px;
-            text-align: center;
-        }
-        .rejected {
-            background-color: #f8d7da; /* 薄い赤 */
-        }
-    </style>
 </head>
 <body>
     <h1>管理者ページ</h1>
@@ -28,7 +13,7 @@
         <thead>
             <tr>
                 <th>番号</th>
-                <th>役職</th>
+                <th>利用種別</th>
                 <th>氏名</th>
                 <th>日付</th>
                 <th>開始時間</th>
@@ -39,7 +24,10 @@
         </thead>
         <tbody>
             {% for r in reservations %}
-            <tr class="{{ 'rejected' if r[6] == '拒否' else '' }}">
+            <tr class="
+                {% if r[7] == '専属' %}exclusive{% endif %}
+                {% if r[6] == '拒否' %}rejected{% endif %}
+            ">
                 <td>{{ loop.index }}</td>
                 <td>{{ r[1] }}</td>
                 <td>{{ r[2] }}</td>
