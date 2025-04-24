@@ -22,28 +22,33 @@ def reserve():
         date = request.form['date']
         start_time = request.form['start_time']
         end_time = request.form['end_time']
+        mode = request.form['mode']  # 専属 or 共有
 
         conn = sqlite3.connect('reservations.db')
         c = conn.cursor()
 
-        # 重複チェック（1分以上かぶる予約があるか）
-        c.execute("""
-            SELECT * FROM reservations
-            WHERE date = ? AND
-            ((start_time < ? AND end_time > ?) OR
-             (start_time < ? AND end_time > ?) OR
-             (start_time >= ? AND end_time <= ?))
-            AND (status IS NULL OR status != '拒否')
-        """, (date, end_time, end_time, start_time, start_time, start_time, end_time))
+        # 専属の場合のみ重複チェック
+        if mode == '専属':
+            c.execute("""
+                SELECT * FROM reservations
+                WHERE date = ? AND (
+                    (start_time < ? AND end_time > ?) OR
+                    (start_time < ? AND end_time > ?) OR
+                    (start_time >= ? AND end_time <= ?)
+                ) AND (status IS NULL OR status != '拒否')
+            """, (date, end_time, end_time, start_time, start_time, start_time, end_time))
+            conflict = c.fetchone()
+            conn.close()
 
-        conflict = c.fetchone()
-        conn.close()
+            if conflict:
+                return render_template('confirm.html', position=position, name=name,
+                                       date=date, start_time=start_time, end_time=end_time, mode=mode)
 
-        if conflict:
-            return render_template('confirm.html', position=position, name=name, date=date,
-                                   start_time=start_time, end_time=end_time)
+        else:
+            conn.close()
 
-        return save_reservation(position, name, date, start_time, end_time)
+        return save_reservation(position, name, date, start_time, end_time, mode)
+
     return render_template('index.html')
 
 @app.route('/confirm', methods=['POST'])
@@ -53,20 +58,21 @@ def confirm():
     date = request.form['date']
     start_time = request.form['start_time']
     end_time = request.form['end_time']
+    mode = request.form['mode']
 
-    return save_reservation(position, name, date, start_time, end_time)
+    return save_reservation(position, name, date, start_time, end_time, mode)
 
-def save_reservation(position, name, date, start_time, end_time):
+def save_reservation(position, name, date, start_time, end_time, mode):
     conn = sqlite3.connect('reservations.db')
     c = conn.cursor()
     c.execute("""
-        INSERT INTO reservations (position, name, date, start_time, end_time, status)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (position, name, date, start_time, end_time, ''))  # 状態は空白
+        INSERT INTO reservations (position, name, date, start_time, end_time, status, mode)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (position, name, date, start_time, end_time, '', mode))
     conn.commit()
     conn.close()
 
-    message = f"{position}：{name} が {date} の {start_time}〜{end_time} に予約しました！"
+    message = f"{position}：{name} が {date} の {start_time}〜{end_time} に予約しました！（{mode}）"
     return render_template('complete.html', message=message)
 
 @app.route('/cancel', methods=['POST'])
@@ -89,6 +95,8 @@ def admin():
         if password == 'adminpass':
             session['admin'] = True
             return redirect(url_for('admin'))
+        else:
+            return render_template('admin_login.html', error='パスワードが違います')
 
     if not session.get('admin'):
         return render_template('admin_login.html', error=None)

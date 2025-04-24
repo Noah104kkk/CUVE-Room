@@ -3,49 +3,70 @@
 <head>
     <meta charset="utf-8">
     <title>予約フォーム</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
     <style>
-        body {
-            font-family: sans-serif;
-            padding: 2em;
-        }
         form {
             max-width: 500px;
-            margin: auto;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         label {
             display: block;
-            margin-top: 1em;
+            margin-top: 10px;
+            font-weight: bold;
         }
-        input[type="text"], input[type="time"], input[type="date"] {
+        input, select {
             width: 100%;
-            padding: 0.5em;
-            margin-top: 0.2em;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
         }
-        input[type="submit"] {
-            margin-top: 2em;
-            padding: 0.7em 1.5em;
+        button {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .note {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>予約フォーム</h1>
+    <h1>部室予約フォーム</h1>
     <form method="POST">
-        <label for="position">役職：</label>
-        <input type="text" id="position" name="position" required>
+        <label for="position">利用種別（専属・開放など）:</label>
+        <select id="position" name="position" required>
+            <option value="" disabled selected>選択してください</option>
+            <option value="専属">専属（1人利用など）</option>
+            <option value="開放">開放（複数人OK）</option>
+        </select>
 
-        <label for="name">氏名：</label>
+        <label for="name">氏名:</label>
         <input type="text" id="name" name="name" required>
 
-        <label for="date">日付：</label>
-        <input type="date" id="date" name="date" required min="1000-01-01" max="9999-12-31">
+        <label for="date">日付（例: 2025-04-23）:</label>
+        <input type="date" id="date" name="date" required pattern="\d{4}-\d{2}-\d{2}">
 
-        <label for="start_time">開始時間：</label>
+        <label for="start_time">開始時間:</label>
         <input type="time" id="start_time" name="start_time" required>
 
-        <label for="end_time">終了時間：</label>
+        <label for="end_time">終了時間:</label>
         <input type="time" id="end_time" name="end_time" required>
 
-        <input type="submit" value="予約する">
+        <button type="submit">予約する</button>
     </form>
+
+    <div class="back-link">
+        <a href="/">ホーム画面に戻る</a>
+    </div>
 </body>
 </html>
