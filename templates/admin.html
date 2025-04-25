@@ -26,9 +26,15 @@
             </thead>
             <tbody>
                 {% for r in reservations %}
-                <tr class="{% if r[6] == '拒否' %}rejected{% endif %}{% if r[7] == '専属' %} exclusive{% endif %}">
+                <tr class="
+                    {% if r[6] == '拒否' %}
+                        rejected
+                    {% elif r[7] == '専属' %}
+                        exclusive
+                    {% endif %}
+                ">
                     <td>{{ loop.index }}</td>
-                    <td>{{ r[1] }}</td>
+                    <td>{{ r[7] }}</td>
                     <td>{{ r[2] }}</td>
                     <td>{{ r[3] }}</td>
                     <td>{{ r[4] }}</td>
@@ -36,12 +42,12 @@
                     <td>{{ r[6] or '' }}</td>
                     <td>
                         {% if r[6] == '拒否' %}
-                        <form method="POST" action="{{ url_for('unreject') }}">
+                        <form action="{{ url_for('undo_reject') }}" method="POST" style="display:inline;">
                             <input type="hidden" name="id" value="{{ r[0] }}">
-                            <button type="submit">拒否取消</button>
+                            <button type="submit">取消</button>
                         </form>
                         {% else %}
-                        <form method="POST" action="{{ url_for('reject') }}">
+                        <form action="{{ url_for('reject') }}" method="POST" style="display:inline;">
                             <input type="hidden" name="id" value="{{ r[0] }}">
                             <button type="submit">拒否</button>
                         </form>
