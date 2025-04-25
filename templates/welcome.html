@@ -23,7 +23,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for i, r in enumerate(reservations, start=1) %}
+                {% for r in reservations %}
                 <tr class="
                     {% if r[6] == '拒否' %}
                         rejected
@@ -31,7 +31,7 @@
                         exclusive
                     {% endif %}
                 ">
-                    <td>{{ i }}</td>
+                    <td>{{ loop.index }}</td>
                     <td>{{ r[7] }}</td>
                     <td>{{ r[2] }}</td>
                     <td>{{ r[3] }}</td>
